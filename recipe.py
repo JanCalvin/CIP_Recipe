@@ -2,6 +2,7 @@ import streamlit as st
 import openpyxl
 from io import BytesIO
 import os
+
 st.title("Upload & Transform Excel CIP Matrix")
 st.subheader("Semangat Ges! 🚀")
 
@@ -41,8 +42,8 @@ def transform_workbook(file):
                 if recipe is None or str(recipe).strip() == "":
                     continue
                 recipe = str(recipe).strip()
-                if recipe.lower() == "no cip":
-                    continue
+
+                # SEMUA data masuk, termasuk "no cip", baik SKU sama maupun beda
                 out_rows.append([row_sku, col_sku, recipe])
 
         ws_out = wb_out.create_sheet(title=sheet_name)
@@ -60,6 +61,7 @@ def transform_workbook(file):
         summary[sheet_name] = len(out_rows) - 1  # jumlah data row (tanpa header)
 
     return wb_out, summary
+
 
 if uploaded_file:
     st.success("File berhasil diupload!")
