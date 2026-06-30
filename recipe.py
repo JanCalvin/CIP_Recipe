@@ -1,7 +1,7 @@
 import streamlit as st
 import openpyxl
 from io import BytesIO
-
+import os
 st.title("Upload & Transform Excel CIP Matrix")
 st.subheader("Semangat Ges! 🚀")
 
@@ -61,7 +61,6 @@ def transform_workbook(file):
 
     return wb_out, summary
 
-
 if uploaded_file:
     st.success("File berhasil diupload!")
 
@@ -71,18 +70,20 @@ if uploaded_file:
         st.error(f"Gagal memproses file: {e}")
         st.stop()
 
+    # Ambil nama sheet pertama buat nama file output
+    first_sheet = wb_hasil.sheetnames[0]
+    output_filename = f"{first_sheet}.xlsx"
+
     st.write("Ringkasan hasil per sheet:")
     for sheet_name, n_rows in summary.items():
         st.write(f"- **{sheet_name}**: {n_rows} baris")
 
     # Preview sheet pertama
-    first_sheet = wb_hasil.sheetnames[0]
     ws_preview = wb_hasil[first_sheet]
     preview_rows = list(ws_preview.iter_rows(min_row=1, max_row=6, values_only=True))
     st.write(f"Preview sheet '{first_sheet}':")
     st.table(preview_rows)
 
-    # Simpan workbook ke buffer untuk didownload
     output = BytesIO()
     wb_hasil.save(output)
     output.seek(0)
@@ -90,6 +91,6 @@ if uploaded_file:
     st.download_button(
         label="Download hasil Excel",
         data=output,
-        file_name="WKWK_converted.xlsx",
+        file_name=output_filename,
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
